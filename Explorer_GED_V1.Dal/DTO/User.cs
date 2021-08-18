@@ -8,6 +8,7 @@ namespace Explorer_GED_V1.Dal.DTO
     public partial class User
     {
         public Guid UserId { get; set; }
+        public Guid? AgentId { get; set; }
         public string UserEmail { get; set; }
         public string Name { get; set; }
         public string PostName { get; set; }
@@ -22,6 +23,6 @@ namespace Explorer_GED_V1.Dal.DTO
         public string Town { get; set; }
         public DateTime? Dob { get; set; }
 
-        public virtual Agent UserNavigation { get; set; }
+        public virtual Agent Agent { get; set; }
     }
 }

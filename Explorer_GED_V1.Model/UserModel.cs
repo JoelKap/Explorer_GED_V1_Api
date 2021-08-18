@@ -4,7 +4,8 @@ namespace Explorer_GED_V1.Model
 {
     public class UserModel
     {
-        public Guid UserId { get; set; }
+        public Guid UserId { get; set; } 
+        public Guid AgentId { get; set; }
         public string UserEmail { get; set; }
         public string Name { get; set; }
         public string PostName { get; set; } 

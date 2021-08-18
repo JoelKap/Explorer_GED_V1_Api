@@ -154,6 +154,8 @@ namespace Explorer_GED_V1.Dal.DTO
 
                 entity.Property(e => e.CardNumber).HasMaxLength(50);
 
+                entity.Property(e => e.CellulairePayment).HasMaxLength(50);
+
                 entity.Property(e => e.Cvv)
                     .HasMaxLength(50)
                     .HasColumnName("CVV");
@@ -258,11 +260,10 @@ namespace Explorer_GED_V1.Dal.DTO
 
                 entity.Property(e => e.UserEmail).HasMaxLength(50);
 
-                entity.HasOne(d => d.UserNavigation)
-                    .WithOne(p => p.User)
-                    .HasForeignKey<User>(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_User_Agent");
+                entity.HasOne(d => d.Agent)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.AgentId)
+                    .HasConstraintName("FK_User_Agent1");
             });
 
             modelBuilder.Entity<UserType>(entity =>

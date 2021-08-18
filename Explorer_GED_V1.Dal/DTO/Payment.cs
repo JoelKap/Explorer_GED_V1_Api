@@ -26,6 +26,7 @@ namespace Explorer_GED_V1.Dal.DTO
         public Guid MotherId { get; set; }
         public Guid AgentId { get; set; }
         public string CollectionPlace { get; set; }
+        public string CellulairePayment { get; set; }
 
         public virtual Agent Agent { get; set; }
         public virtual Document Document { get; set; }
