@@ -24,9 +24,9 @@ namespace Explorer_GED_V1.Service.Implementation
             return _paymentDal.CreatePayment(request);
         } 
 
-        public bool UpdatePayment(string docStatus, Guid paymentId)
+        public bool UpdatePayment(string docStatus, Guid paymentId, string comment)
         {
-            return _paymentDal.UpdatePayment(docStatus, paymentId);
+            return _paymentDal.UpdatePayment(docStatus, paymentId, comment);
         }
 
         public List<PaymentModel> GetPaymentsByUser(Guid userId)

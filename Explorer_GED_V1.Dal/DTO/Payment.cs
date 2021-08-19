@@ -27,10 +27,12 @@ namespace Explorer_GED_V1.Dal.DTO
         public Guid AgentId { get; set; }
         public string CollectionPlace { get; set; }
         public string CellulairePayment { get; set; }
+        public Guid UserId { get; set; }
 
         public virtual Agent Agent { get; set; }
         public virtual Document Document { get; set; }
         public virtual Father Father { get; set; }
         public virtual Mother Mother { get; set; }
+        public virtual User User { get; set; }
     }
 }

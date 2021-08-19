@@ -10,7 +10,6 @@ namespace Explorer_GED_V1.Dal.DTO
         public Agent()
         {
             Payments = new HashSet<Payment>();
-            Users = new HashSet<User>();
         }
 
         public Guid AgentId { get; set; }
@@ -28,6 +27,5 @@ namespace Explorer_GED_V1.Dal.DTO
 
         public virtual UserType UserType { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
-        public virtual ICollection<User> Users { get; set; }
     }
 }

@@ -205,6 +205,12 @@ namespace Explorer_GED_V1.Dal.DTO
                     .HasForeignKey(d => d.MotherId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Payment_Mother");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Payments)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Payment_User");
             });
 
             modelBuilder.Entity<Province>(entity =>
@@ -223,10 +229,6 @@ namespace Explorer_GED_V1.Dal.DTO
                 entity.ToTable("User");
 
                 entity.Property(e => e.UserId).ValueGeneratedNever();
-
-                entity.Property(e => e.Cellphone)
-                    .IsRequired()
-                    .HasMaxLength(50);
 
                 entity.Property(e => e.Commune).HasMaxLength(50);
 
@@ -257,13 +259,6 @@ namespace Explorer_GED_V1.Dal.DTO
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Town).HasMaxLength(50);
-
-                entity.Property(e => e.UserEmail).HasMaxLength(50);
-
-                entity.HasOne(d => d.Agent)
-                    .WithMany(p => p.Users)
-                    .HasForeignKey(d => d.AgentId)
-                    .HasConstraintName("FK_User_Agent1");
             });
 
             modelBuilder.Entity<UserType>(entity =>

@@ -18,6 +18,7 @@ namespace Explorer_GED_V1.Dal.Implementations
         {
             var payments = _explorerContext.Payments.ToList();
             var users = _explorerContext.Users.ToList();
+            var ids = new List<Guid>();
             var list = new List<PaymentModel>();
             for (int i = 0; i < payments.Count; i++)
             {
@@ -39,6 +40,8 @@ namespace Explorer_GED_V1.Dal.Implementations
                     PaymentApprovalDate = (DateTime)payments[i].PaymentApprovalDate,
                     PaymentPrintingDate = (DateTime)payments[i].PaymentPrintingDate,
                     CollectionPlace = payments[i].CollectionPlace,
+                    CellulairePayment = payments[i].CellulairePayment,
+                    PaymentComment = payments[i].PaymentComment,
                     Document = new DocumentModel()
                     {
                         DocumentDescription = _explorerContext.Documents.Where(x => x.DocumentId == payments[i].DocumentId).FirstOrDefault().DocumentDescription,
@@ -67,37 +70,28 @@ namespace Explorer_GED_V1.Dal.Implementations
                         MotherProvince = _explorerContext.Mothers.Where(x => x.MotherId == payments[i].MotherId).FirstOrDefault().Province,
                         Surname = _explorerContext.Mothers.Where(x => x.MotherId == payments[i].MotherId).FirstOrDefault().Surname,
                         Town = _explorerContext.Mothers.Where(x => x.MotherId == payments[i].MotherId).FirstOrDefault().Town,
+                    },
+                    User = new UserModel()
+                    {
+                        Dob = (DateTime)_explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Dob,
+                        Commune = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Commune,
+                        Name = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Name,
+                        PostName = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().PostName,
+                        Province = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Province,
+                        Quartier = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Quartier,
+                        streetName = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().StreetName,
+                        StreetNumber = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().StreetNumber,
+                        Surname = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Surname,
+                        Town = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Town,
+                        UserId = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().UserId,
                     }
                 };
-                //if()
-                //{
-
-                //    User = new UserModel()
-                //    {
-                //        Cellphone = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Cellphone,
-                //        Commune = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Commune,
-                //        Dob = (DateTime)_explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Dob,
-                //        Name = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Name,
-                //        PostName = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().PostName,
-                //        Province = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Province,
-                //        Quartier = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Quartier,
-                //        streetName = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().StreetName,
-                //        StreetNumber = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().StreetName,
-                //        Surname = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Surname,
-                //        Town = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Town,
-                //        UserEmail = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().UserEmail,
-                //        AgentId = (Guid)_explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().AgentId
-                //    },
-                //} else
-                //{
-                //    continue;
-                //}
                 list.Add(payment);
             }
             return list;
         }
 
-        public bool UpdatePayment(string docStatus, Guid paymentId)
+        public bool UpdatePayment(string docStatus, Guid paymentId, string comment)
         {
             var paymentDto = _explorerContext.Payments.Where(x => x.PaymentId == paymentId).FirstOrDefault();
             if (docStatus == "Approved")
@@ -110,6 +104,13 @@ namespace Explorer_GED_V1.Dal.Implementations
             if (docStatus == "Printed")
             {
                 paymentDto.PaymentStatus = docStatus;
+                paymentDto.PaymentPrintingDate = DateTime.Now;
+            }
+
+            if(docStatus == "Cancel")
+            {
+                paymentDto.PaymentStatus = docStatus;
+                paymentDto.PaymentComment = comment;
                 paymentDto.PaymentPrintingDate = DateTime.Now;
             }
 
@@ -152,13 +153,12 @@ namespace Explorer_GED_V1.Dal.Implementations
             _explorerContext.Mothers.Add(motherDto);
             _explorerContext.SaveChanges();
 
+            var userId = Guid.NewGuid();
             var userDto = new User()
             {
-                Cellphone = request.User.Cellphone,
                 Commune = request.User.Commune,
                 Dob = request.User.Dob,
                 Name = request.User.Name,
-                Password = request.User.Password,
                 PostName = request.User.PostName,
                 Province = request.User.Province,
                 Quartier = request.User.Quartier,
@@ -166,9 +166,7 @@ namespace Explorer_GED_V1.Dal.Implementations
                 StreetNumber = request.User.StreetNumber,
                 Surname = request.User.Surname,
                 Town = request.User.Town,
-                UserEmail = request.User.UserEmail,
-                UserId = Guid.NewGuid(),
-                AgentId = request.User.UserId
+                UserId = userId
             };
 
             _explorerContext.Users.Add(userDto);
@@ -191,7 +189,7 @@ namespace Explorer_GED_V1.Dal.Implementations
                 PaymentStatus = request.PaymentStatus,
                 Photo = "Null", //request.Photo,
                 CollectionPlace = request.CollectionPlace,
-                
+                UserId = userId,
                 PaymentId = Guid.NewGuid(),
                 AgentId = request.User.UserId,
                 DocumentId = request.Document.DocumentId,
@@ -226,21 +224,20 @@ namespace Explorer_GED_V1.Dal.Implementations
                     PaymentApprovalDate = (DateTime)payments[i].PaymentApprovalDate,
                     PaymentPrintingDate = (DateTime)payments[i].PaymentPrintingDate,
                     CollectionPlace = payments[i].CollectionPlace,
+                    CellulairePayment = payments[i].CellulairePayment,
                     User = new UserModel()
                     {
-                        Cellphone = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Cellphone,
-                        Commune = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Commune,
-                        Dob = (DateTime)_explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Dob,
-                        Name = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Name,
-                        PostName = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().PostName,
-                        Province = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Province,
-                        Quartier = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Quartier,
-                        streetName = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().StreetName,
-                        StreetNumber = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().StreetName,
-                        Surname = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Surname,
-                        Town = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().Town,
-                        UserEmail = _explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().UserEmail,
-                        AgentId = (Guid)_explorerContext.Users.Where(x => x.AgentId == payments[i].AgentId).FirstOrDefault().AgentId
+                        Dob = (DateTime)_explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Dob,
+                        Commune = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Commune,
+                        Name = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Name,
+                        PostName = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().PostName,
+                        Province = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Province,
+                        Quartier = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Quartier,
+                        streetName = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().StreetName,
+                        StreetNumber = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().StreetNumber,
+                        Surname = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Surname,
+                        Town = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().Town,
+                        UserId = _explorerContext.Users.Where(x => x.UserId == payments[i].UserId).FirstOrDefault().UserId,
                     },
                     Document = new DocumentModel()
                     {
@@ -297,21 +294,20 @@ namespace Explorer_GED_V1.Dal.Implementations
                 PaymentApprovalDate = (DateTime)paymentDto.PaymentApprovalDate,
                 PaymentPrintingDate = (DateTime)paymentDto.PaymentPrintingDate,
                 CollectionPlace = paymentDto.CollectionPlace,
+                CellulairePayment = paymentDto.CellulairePayment,
                 User = new UserModel()
                 {
-                    Cellphone = _explorerContext.Users.Where(x => x.AgentId == paymentDto.AgentId).FirstOrDefault().Cellphone,
-                    Commune = _explorerContext.Users.Where(x => x.AgentId == paymentDto.AgentId).FirstOrDefault().Commune,
-                    Dob = (DateTime)_explorerContext.Users.Where(x => x.AgentId == paymentDto.AgentId).FirstOrDefault().Dob,
-                    Name = _explorerContext.Users.Where(x => x.AgentId == paymentDto.AgentId).FirstOrDefault().Name,
-                    PostName = _explorerContext.Users.Where(x => x.AgentId == paymentDto.AgentId).FirstOrDefault().PostName,
-                    Province = _explorerContext.Users.Where(x => x.AgentId == paymentDto.AgentId).FirstOrDefault().Province,
-                    Quartier = _explorerContext.Users.Where(x => x.AgentId == paymentDto.AgentId).FirstOrDefault().Quartier,
-                    streetName = _explorerContext.Users.Where(x => x.AgentId == paymentDto.AgentId).FirstOrDefault().StreetName,
-                    StreetNumber = _explorerContext.Users.Where(x => x.AgentId == paymentDto.AgentId).FirstOrDefault().StreetName,
-                    Surname = _explorerContext.Users.Where(x => x.AgentId == paymentDto.AgentId).FirstOrDefault().Surname,
-                    Town = _explorerContext.Users.Where(x => x.AgentId == paymentDto.AgentId).FirstOrDefault().Town,
-                    UserEmail = _explorerContext.Users.Where(x => x.AgentId == paymentDto.AgentId).FirstOrDefault().UserEmail,
-                    AgentId = (Guid)_explorerContext.Users.Where(x => x.AgentId == paymentDto.AgentId).FirstOrDefault().AgentId
+                    Dob = (DateTime)_explorerContext.Users.Where(x => x.UserId == paymentDto.UserId).FirstOrDefault().Dob,
+                    Commune = _explorerContext.Users.Where(x => x.UserId == paymentDto.UserId).FirstOrDefault().Commune,
+                    Name = _explorerContext.Users.Where(x => x.UserId == paymentDto.UserId).FirstOrDefault().Name,
+                    PostName = _explorerContext.Users.Where(x => x.UserId == paymentDto.UserId).FirstOrDefault().PostName,
+                    Province = _explorerContext.Users.Where(x => x.UserId == paymentDto.UserId).FirstOrDefault().Province,
+                    Quartier = _explorerContext.Users.Where(x => x.UserId == paymentDto.UserId).FirstOrDefault().Quartier,
+                    streetName = _explorerContext.Users.Where(x => x.UserId == paymentDto.UserId).FirstOrDefault().StreetName,
+                    StreetNumber = _explorerContext.Users.Where(x => x.UserId == paymentDto.UserId).FirstOrDefault().StreetNumber,
+                    Surname = _explorerContext.Users.Where(x => x.UserId == paymentDto.UserId).FirstOrDefault().Surname,
+                    Town = _explorerContext.Users.Where(x => x.UserId == paymentDto.UserId).FirstOrDefault().Town,
+                    UserId = _explorerContext.Users.Where(x => x.UserId == paymentDto.UserId).FirstOrDefault().UserId,
                 },
                 Document = new DocumentModel()
                 {

@@ -28,14 +28,14 @@ namespace Explorer_GED_V1_Api.Controllers
         }
 
 
-        [HttpGet("api/[controller]/UpdatePayment/{docStatus}/{paymentId}")]
-        public IActionResult UpdatePayment(string docStatus, Guid paymentId)
+        [HttpGet("api/[controller]/UpdatePayment/{docStatus}/{paymentId}/{comment}")]
+        public IActionResult UpdatePayment(string docStatus, Guid paymentId, string comment)
         {
-            return Ok(_paymentService.UpdatePayment(docStatus, paymentId));
+            return Ok(_paymentService.UpdatePayment(docStatus, paymentId, comment));
         }
 
-        [HttpGet("api/[controller]/GetPaymentsByUser/{agentId}")]
-        public IActionResult UpdatePayment(Guid agentId)
+        [HttpGet("api/[controller]/GetPaymentsByUser/{agentId}")] 
+        public IActionResult GetPaymentsByUser(Guid agentId)
         {
             return Ok(_paymentService.GetPaymentsByUser(agentId));
         }

@@ -8,7 +8,7 @@ namespace Explorer_GED_V1.Service.Contracts
     {
         List<PaymentModel> GetPendingPayments();
         bool CreatePayment(PaymentModel request); 
-        bool UpdatePayment(string docStatus, Guid paymentId); 
+        bool UpdatePayment(string docStatus, Guid paymentId, string comment); 
         List<PaymentModel> GetPaymentsByUser(Guid agentId);
         PaymentModel GetPaymentsByReference(string paymentRef);
     }
